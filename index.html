@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rashi Letter Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Rashi+Hebrew:wght@100..900&family=Noto+Sans+Hebrew:wght@100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Find the Letter!</h1>
+            <div class="stats">
+                <div class="stat-item">Score: <span id="score">0</span></div>
+                <div class="stat-item">Best: <span id="high-score">0</span></div>
+            </div>
+        </header>
+
+        <main>
+            <div class="target-container">
+                <div id="target-letter" class="rashi-letter">?</div>
+                <p>Which letter is this in standard Hebrew?</p>
+            </div>
+
+            <div id="options-container" class="options-grid">
+                <!-- Options will be generated here -->
+            </div>
+        </main>
+
+        <div id="feedback" class="feedback hidden"></div>
+
+        <footer>
+            <button id="reset-btn">Reset Game</button>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
