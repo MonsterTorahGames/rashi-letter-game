@@ -28,6 +28,15 @@ const HEBREW_ALPHABET = [
     { hebrew: 'ת', rashi: 'ת' }
 ];
 
+const IMAGE_MAPPING = {
+    'א': { title: 'Orangutan', img: 'assets/aleph.png' },
+    'ב': { title: 'Bear', img: 'assets/bet.png' },
+    'ג': { title: 'Giraffe', img: 'assets/gimel.png' },
+    'ד': { title: 'Dinosaur', img: 'assets/dalet.png' },
+    'ה': { title: 'Horse', img: 'assets/he.png' },
+    'ו': { title: 'Violin', img: 'assets/vav.png' }
+};
+
 let score = 0;
 let highScore = localStorage.getItem('rashiHighScore') || 0;
 let currentTarget = null;
@@ -40,12 +49,20 @@ const highScoreElement = document.getElementById('high-score');
 const feedbackElement = document.getElementById('feedback');
 const resetBtn = document.getElementById('reset-btn');
 
+// Modal Elements
+const successModal = document.getElementById('success-modal');
+const comicImage = document.getElementById('comic-image');
+const comicText = document.getElementById('comic-text');
+const nextBtn = document.getElementById('next-btn');
+
 function initGame() {
     highScoreElement.textContent = highScore;
     nextRound();
 }
 
 function nextRound() {
+    successModal.classList.add('hidden');
+
     // Select a random target letter
     const randomIndex = Math.floor(Math.random() * HEBREW_ALPHABET.length);
     currentTarget = HEBREW_ALPHABET[randomIndex];
@@ -98,19 +115,32 @@ function handleChoice(choice, button) {
         feedbackElement.style.color = 'var(--success-color)';
         feedbackElement.classList.remove('hidden');
 
-        // Wait a bit before next round
-        setTimeout(nextRound, 1000);
+        // Check if we have an image for this letter
+        const mapping = IMAGE_MAPPING[currentTarget.rashi];
+        if (mapping) {
+            setTimeout(() => {
+                showSuccessModal(mapping);
+            }, 600);
+        } else {
+            // Wait a bit before next round if no image
+            setTimeout(nextRound, 1000);
+        }
     } else {
         // Incorrect
         button.classList.add('incorrect');
         feedbackElement.textContent = 'Oops, try again!';
         feedbackElement.style.color = 'var(--error-color)';
         feedbackElement.classList.remove('hidden');
-
-        // Reset score if you want semi-hard mode, but for kids better to just keep it or slight penalty
-        // Let's just not increment for now.
     }
 }
+
+function showSuccessModal(mapping) {
+    comicImage.src = mapping.img;
+    comicText.textContent = mapping.title;
+    successModal.classList.remove('hidden');
+}
+
+nextBtn.addEventListener('click', nextRound);
 
 resetBtn.addEventListener('click', () => {
     score = 0;
