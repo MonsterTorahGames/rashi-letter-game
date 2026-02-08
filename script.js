@@ -126,6 +126,10 @@ const GEMARA_VOCAB = [
 
 let score = 0;
 let highScore = localStorage.getItem('gemaraHighScore') || 0;
+let streak = 0;
+let answerHistory = []; // Tracks last 10 answers (true=correct, false=incorrect)
+let timer = 10;
+let timerInterval;
 let currentTarget = null;
 let options = [];
 
@@ -133,6 +137,8 @@ const targetElement = document.getElementById('target-letter');
 const optionsContainer = document.getElementById('options-container');
 const scoreElement = document.getElementById('score');
 const highScoreElement = document.getElementById('high-score');
+const streakElement = document.getElementById('streak');
+const timerElement = document.getElementById('timer');
 const feedbackElement = document.getElementById('feedback');
 const resetBtn = document.getElementById('reset-btn');
 
@@ -141,7 +147,59 @@ function initGame() {
     nextRound();
 }
 
+function startTimer() {
+    clearInterval(timerInterval);
+    timer = 10;
+    timerElement.textContent = timer;
+    timerInterval = setInterval(() => {
+        timer--;
+        timerElement.textContent = timer;
+        if (timer <= 0) {
+            clearInterval(timerInterval);
+            handleTimeOut();
+        }
+    }, 1000);
+}
+
+function handleTimeOut() {
+    feedbackElement.textContent = 'Time\'s up! 😈';
+    feedbackElement.style.color = 'var(--error-color)';
+    feedbackElement.classList.remove('hidden');
+
+    // Treat as wrong answer
+    updateStreak(false);
+
+    setTimeout(nextRound, 1500);
+}
+
+function updateStreak(isCorrect) {
+    answerHistory.push(isCorrect);
+    if (answerHistory.length > 10) {
+        answerHistory.shift();
+    }
+
+    // "Forgiving Streak": Lost if 3 or more wrong in last 10
+    const wrongAnswers = answerHistory.filter(x => !x).length;
+
+    if (wrongAnswers >= 3) {
+        streak = 0;
+        // Optionally clear history or keep it? 
+        // "Streak gets lost" implies reset. Let's clear history to avoid immediate re-trigger?
+        // But the user said "if user gets 3 in 10 wrong".
+        // A clean reset makes sense.
+        answerHistory = [];
+        feedbackElement.textContent += ' Streak Lost! 😈';
+    } else if (isCorrect) {
+        streak++;
+    }
+    // If incorrect, streak just stays same (doesn't increment), unless it hit the lost condition.
+
+    streakElement.textContent = streak;
+}
+
 function nextRound() {
+    clearInterval(timerInterval);
+
     // Select a random target word
     const randomIndex = Math.floor(Math.random() * GEMARA_VOCAB.length);
     currentTarget = GEMARA_VOCAB[randomIndex];
@@ -167,6 +225,7 @@ function nextRound() {
 
     renderOptions();
     feedbackElement.classList.add('hidden');
+    startTimer();
 }
 
 function renderOptions() {
@@ -182,6 +241,8 @@ function renderOptions() {
 }
 
 function handleChoice(choice, button) {
+    clearInterval(timerInterval);
+
     if (choice.english === currentTarget.english) {
         // Correct
         score++;
@@ -197,20 +258,35 @@ function handleChoice(choice, button) {
         feedbackElement.style.color = 'var(--success-color)';
         feedbackElement.classList.remove('hidden');
 
+        updateStreak(true);
+
         // Wait a bit before next round
         setTimeout(nextRound, 1000);
     } else {
         // Incorrect
         button.classList.add('incorrect');
-        feedbackElement.textContent = 'Try again!';
+        feedbackElement.textContent = 'Try again! 😈';
         feedbackElement.style.color = 'var(--error-color)';
         feedbackElement.classList.remove('hidden');
+
+        updateStreak(false);
+
+        // No auto-advance on wrong answer usually? 
+        // User asked "every time that user gets one wrong...". 
+        // If I don't advance, they can guess again. 
+        // But for streak tracking, allowing multiple guesses per round breaks logic (could spam correct after wrong).
+        // Let's advance on wrong too? Or let them try but record the error once.
+        // Simple game: Advance on Wrong too (like "Time's up").
+        setTimeout(nextRound, 1500);
     }
 }
 
 resetBtn.addEventListener('click', () => {
     score = 0;
+    streak = 0;
+    answerHistory = [];
     scoreElement.textContent = score;
+    streakElement.textContent = streak;
     nextRound();
 });
 
