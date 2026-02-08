@@ -276,8 +276,8 @@ function handleChoice(choice, button) {
         // If I don't advance, they can guess again. 
         // But for streak tracking, allowing multiple guesses per round breaks logic (could spam correct after wrong).
         // Let's advance on wrong too? Or let them try but record the error once.
-        // Simple game: Advance on Wrong too (like "Time's up").
-        setTimeout(nextRound, 1500);
+        // No auto-advance on wrong answer
+        // setTimeout(nextRound, 1500);
     }
 }
 
