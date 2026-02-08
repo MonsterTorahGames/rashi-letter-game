@@ -47,6 +47,7 @@ header h1 {
     margin-bottom: 0.5rem;
     background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -62,7 +63,7 @@ header h1 {
 }
 
 .rashi-letter {
-    font-family: 'Noto Rashi Hebrew', serif;
+    font-family: 'Noto Sans Hebrew', sans-serif;
     font-size: 6rem;
     height: 140px;
     display: flex;
