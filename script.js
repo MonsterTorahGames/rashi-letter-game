@@ -128,7 +128,7 @@ let score = 0;
 let highScore = localStorage.getItem('gemaraHighScore') || 0;
 let streak = 0;
 let answerHistory = []; // Tracks last 10 answers (true=correct, false=incorrect)
-let timer = 10;
+let timer = 25;
 let timerInterval;
 let currentTarget = null;
 let options = [];
@@ -149,7 +149,7 @@ function initGame() {
 
 function startTimer() {
     clearInterval(timerInterval);
-    timer = 10;
+    timer = 25;
     timerElement.textContent = timer;
     timerInterval = setInterval(() => {
         timer--;
